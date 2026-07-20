@@ -1,0 +1,58 @@
+[project]
+name = "raman-bacteria-prototype"
+version = "0.1.0"
+description = "Research-use Raman spectrum classification prototype foundation"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+dependencies = []
+
+[project.scripts]
+raman-check-environment = "raman_bacteria_prototype.cli:check_environment_main"
+raman-checks = "raman_bacteria_prototype.cli:run_checks_main"
+
+[build-system]
+requires = ["uv_build>=0.11.29,<0.12"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "black==26.5.1",
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+    "ruff==0.15.22",
+]
+
+[tool.uv]
+required-version = "==0.11.29"
+
+[tool.pytest.ini_options]
+minversion = "9.1"
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-config", "--strict-markers"]
+markers = [
+    "unit: isolated unit test",
+    "integration: subprocess or repository integration test",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["raman_bacteria_prototype"]
+omit = ["src/raman_bacteria_prototype/*/__init__.py"]
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+skip_covered = false
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+extend-exclude = ["data", "models", "reports", ".venv"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP", "B", "C4", "SIM", "RUF"]
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+extend-exclude = '/(data|models|reports|\.venv)/'
