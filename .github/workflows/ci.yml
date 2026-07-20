@@ -36,8 +36,23 @@ jobs:
       run:
         shell: pwsh
     steps:
-      - name: Check out repository
+      - name: Check out exact implementation commit
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Record verified commit SHA
+        shell: pwsh
+        run: |
+          $expectedSha = "${{ github.event.pull_request.head.sha || github.sha }}"
+          $actualSha = git rev-parse HEAD
+
+          Write-Output "EXPECTED_SHA=$expectedSha"
+          Write-Output "VERIFIED_SHA=$actualSha"
+
+          if ($actualSha -ne $expectedSha) {
+            throw "Checked-out SHA $actualSha does not match expected SHA $expectedSha"
+          }
       - name: Install pinned uv and Python
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
         with:
