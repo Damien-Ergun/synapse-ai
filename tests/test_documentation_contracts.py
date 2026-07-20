@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import shutil
 from pathlib import Path
 
 import pytest
@@ -19,6 +20,44 @@ def load_checker(project_root: Path):
 def test_documentation_contracts_pass(project_root: Path) -> None:
     checker = load_checker(project_root)
     assert checker.validate() == []
+
+
+@pytest.mark.integration
+def test_missing_definition_document_returns_structured_failure(
+    project_root: Path,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    repo_copy = tmp_path / "repo"
+
+    shutil.copytree(
+        project_root,
+        repo_copy,
+        ignore=shutil.ignore_patterns(
+            ".git",
+            ".venv",
+            "__pycache__",
+            ".pytest_cache",
+            ".ruff_cache",
+            "logs",
+            "generated",
+        ),
+    )
+
+    missing_relative = "docs/product/open_questions_register.md"
+    missing_document = repo_copy / missing_relative
+
+    assert missing_document.is_file()
+    missing_document.unlink()
+
+    checker = load_checker(repo_copy)
+
+    assert checker.main() == 1
+
+    captured = capsys.readouterr()
+
+    assert f"Missing definition document for OQ: {missing_relative}" in captured.err
+    assert "Traceback" not in captured.err
 
 
 @pytest.mark.unit

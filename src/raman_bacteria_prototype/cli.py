@@ -13,7 +13,12 @@ from .environment import print_environment_report, run_environment_checks
 
 def check_environment_main(argv: Sequence[str] | None = None) -> int:
     """Run environment validation and return its documented exit code."""
-    _ = argv
+    args = list(argv if argv is not None else sys.argv[1:])
+
+    if args:
+        print("Usage: raman-check-environment", file=sys.stderr)
+        return 2
+
     code, payload = run_environment_checks()
     print_environment_report(payload)
     return code

@@ -115,13 +115,16 @@ def validate(project_root: Path | None = None) -> list[str]:
     )
     for kind, pattern in ID_PATTERNS.items():
         definitions: list[str] = []
+
         for relative in DEFINITION_PATHS[kind]:
-            definitions.extend(
-                table_definition_ids(
-                    (resolved_root / relative).read_text(encoding="utf-8"),
-                    pattern,
-                )
-            )
+            definition_path = resolved_root / relative
+
+            if not definition_path.is_file():
+                errors.append(f"Missing definition document for {kind}: {relative}")
+                continue
+
+            definition_text = definition_path.read_text(encoding="utf-8")
+            definitions.extend(table_definition_ids(definition_text, pattern))
         duplicates = [
             identifier
             for identifier, count in Counter(definitions).items()

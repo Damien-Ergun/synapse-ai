@@ -22,6 +22,24 @@ def test_checks_cli_success(monkeypatch, capsys, tmp_path) -> None:
 
 
 @pytest.mark.unit
+def test_environment_cli_rejects_unexpected_arguments(
+    monkeypatch,
+    capsys,
+) -> None:
+    def fail_if_called():
+        pytest.fail("run_environment_checks must not run when arguments are invalid")
+
+    monkeypatch.setattr(cli, "run_environment_checks", fail_if_called)
+
+    assert cli.check_environment_main(["unexpected"]) == 2
+
+    captured = capsys.readouterr()
+
+    assert captured.out == ""
+    assert "Usage: raman-check-environment" in captured.err
+
+
+@pytest.mark.unit
 def test_checks_cli_rejects_bad_arguments(capsys) -> None:
     assert cli.run_checks_main(["unexpected"]) == 2
     assert "Usage" in capsys.readouterr().err
