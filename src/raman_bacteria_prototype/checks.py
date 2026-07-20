@@ -244,7 +244,9 @@ def run_checks(
             "overall_status": "PASS" if passed else "FAIL",
             "results": [item.to_dict() for item in results],
         }
-        destination = output_path or repository_root / "reports/logs/week_1/check-results.json"
+        destination = (
+            output_path or repository_root / "reports/logs/week_1/check-results.json"
+        )
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_text(
             json.dumps(payload, indent=2, sort_keys=True) + "\n",

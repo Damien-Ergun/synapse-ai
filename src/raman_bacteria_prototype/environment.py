@@ -154,7 +154,11 @@ def evaluate_environment(
         CheckResult(
             "ENV-IMPORT",
             package_spec is not None,
-            "Package import is discoverable." if package_spec else "Package import failed.",
+            (
+                "Package import is discoverable."
+                if package_spec
+                else "Package import failed."
+            ),
         )
     )
     return results
