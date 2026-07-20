@@ -207,7 +207,7 @@ def run_checks(
     output_path: Path | None = None,
     executor: Callable[[CommandSpec, Path], CommandResult] = run_subprocess,
     which: Callable[[str], str | None] = shutil.which,
-    python_executable: str = "python",
+    python_executable: str = sys.executable,
 ) -> tuple[int, dict[str, object]]:
     """Run every mandatory check and return the overall exit code and summary."""
     overall_started = utc_now()
