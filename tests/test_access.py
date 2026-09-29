@@ -61,3 +61,15 @@ def test_non_holdout_can_load(tmp_path: Path) -> None:
     path = tmp_path / "X_reference.npy"
     np.save(path, np.ones((2, 3)))
     assert load_development_array(path).shape == (2, 3)
+
+
+def test_holdout_registry_matches_committed_holdout_manifest() -> None:
+    import json
+
+    payload = json.loads(
+        Path("data-manifests/clinical2019-holdout.json").read_text(encoding="utf-8")
+    )
+    manifest_hashes = {
+        entry["filename"]: entry["sha256"] for entry in payload["files"]
+    }
+    assert manifest_hashes == HOLDOUT_SHA256_BY_FILENAME
