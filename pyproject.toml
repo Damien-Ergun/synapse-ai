@@ -47,3 +47,8 @@ pythonVersion = "3.11"
 typeCheckingMode = "strict"
 include = ["packages", "tests"]
 exclude = ["notebooks"]
+extraPaths = [
+  "packages/synapse-core/src",
+  "packages/synapse-api/src",
+  "packages/synapse-ui/src",
+]
