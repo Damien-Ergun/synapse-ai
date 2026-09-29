@@ -1,22 +1,35 @@
 # Week 1 closeout status
 
-Updated after the audited Raman dataset manifest and outreach templates were committed on 2026-09-29.
+Updated after the independent Week 1 review identified a holdout-isolation blocker and manifest/documentation gaps.
 
-## Technical exit gates
+## Current release-gate state
 
-| Requirement | Status | Evidence |
+**PENDING INDEPENDENT RE-REVIEW**
+
+The independent reviewer returned **FAIL** because the original clinical2019 safeguard trusted filenames. The implementation has now been remediated to enforce frozen SHA-256 identities before loading.
+
+## Remediated reviewer findings
+
+| Finding | Status | Evidence |
 | --- | --- | --- |
-| `uv sync` works | PASS | Locked dependency installation passes in GitHub Actions |
-| CI passes | PASS | Quality and Docker Compose smoke jobs pass |
-| All supplied dataset files checksummed | PASS | `data-manifests/dataset-manifest.json` |
-| Shapes and labels documented | PASS | Dataset manifest and dataset card |
-| `clinical2019` protected | PASS | Controlled loader, automated test, immutable hashes recorded |
-| Isolate grouping issue documented | PASS | Grouping explicitly remains unknown |
-| Clinical-2018 discrepancy documented | PASS | Delivered 10,000-spectrum file verified and discrepancy recorded |
-| Preprocessing uncertainty documented | PASS | Strong evidence of prior scaling, exact method remains unknown |
-| First two interviews scheduled | PENDING HUMAN ACTION | Calendar/email evidence required |
+| W1-B01 holdout alias bypass | REMEDIATED, RE-REVIEW REQUIRED | Frozen clinical2019 SHA-256 registry, content-hash enforcement, rename/symlink tests |
+| W1-H01 incomplete manifest generation | REMEDIATED, RE-REVIEW REQUIRED | Exact 11-file inventory validation and missing-file tests |
+| W1-H02 biological label equivalence wording | REMEDIATED | Dataset card now says same numeric label codes; biological mapping is UNVERIFIED |
+| Cross-split duplicate reproducibility | REMEDIATED | Reusable pairwise audit plus synthetic detection test and committed zero-overlap result |
 
-## Week 1 founder/business deliverables
+## Other robustness improvements
+
+- strict JSON serialization converts non-finite summary values to `null`;
+- malformed spectral dimensionality is rejected;
+- Docker runtime uses `uv run --no-sync`;
+- `*.egg-info/` is ignored;
+- PR #1 is draft again.
+
+## Technical gates
+
+The original data identity, hashes, shapes, integrity checks, Raman axis, preprocessing assessment, clinical-2018 uncertainty, environment, CI, and Docker results remain documented. The revised branch must pass CI and then undergo the independent reviewer gate again before Week 2.
+
+## Founder/business deliverables
 
 | Deliverable | Status |
 | --- | --- |
@@ -29,15 +42,10 @@ Updated after the audited Raman dataset manifest and outreach templates were com
 | Equity/governance discussion scheduled before end of Week 2 | PENDING HUMAN ACTION |
 | Issam fixed weekly contribution agreed | PENDING HUMAN ACTION |
 
-## Follow-up items that do not invalidate the Week 1 technical foundation
+## Release rule
 
-- resolve the upstream clinical-2018 source discrepancy before isolate-level validation;
-- establish explicit isolate/patient mapping if available;
-- verify dataset licensing and commercial-use terms;
-- verify/configure `main` branch protection with GitHub admin access.
+Do not begin Week 2 until:
 
-## Merge readiness
-
-The engineering and data-audit foundation is ready for review.
-
-Keep PR #1 in draft until the founder/business closeout is evidenced, especially the explicit exit gate requiring the first two interviews to be scheduled.
+1. the revised technical branch passes CI;
+2. the independent Week 1 reviewer approves the remediated safeguards;
+3. the required Week 1 founder closeout, including two scheduled interviews, is evidenced.
