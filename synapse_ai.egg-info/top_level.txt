@@ -1,3 +1,0 @@
-synapse_api
-synapse_core
-synapse_ui
