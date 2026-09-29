@@ -3,8 +3,13 @@ from pathlib import Path
 import numpy as np
 from hypothesis import given
 from hypothesis import strategies as st
-
-from synapse_core.audit import axis_summary, duplicate_summary, inspect_npy, label_summary, sha256_file
+from synapse_core.audit import (
+    axis_summary,
+    duplicate_summary,
+    inspect_npy,
+    label_summary,
+    sha256_file,
+)
 
 
 def test_inspect_detects_nan_inf_and_shape(tmp_path: Path) -> None:
