@@ -30,15 +30,15 @@ The byte-identical hashes for `y_finetune.npy` and `y_test.npy` are a verified o
 
 ## Splits and labels
 
-Reference has 60,000 observations across 30 classes, with 2,000 observations per class.
+Reference has 60,000 observations across 30 numeric label codes, with 2,000 observations per code.
 
-Fine-tuning and reference test each have 3,000 observations across the same 30 classes, with 100 observations per class.
+Fine-tuning and reference test each have 3,000 observations using the same numeric label-code set `0..29`, with 100 observations per code.
 
-Clinical 2018 has 10,000 observations across five class labels: 0, 2, 3, 5, and 6, with 2,000 observations per label.
+Clinical 2018 has 10,000 observations across five numeric label codes: 0, 2, 3, 5, and 6, with 2,000 observations per code.
 
-Clinical 2019 has 2,500 observations across the same five labels, with 500 observations per label.
+Clinical 2019 has 2,500 observations using the same numeric label-code set `0, 2, 3, 5, 6`, with 500 observations per code.
 
-These are class labels, not verified patient or isolate identifiers.
+**Biological label mapping status: UNVERIFIED.** Equality of numeric codes across splits does not by itself establish that those codes have identical biological meaning. The numeric labels are also not verified patient or isolate identifiers.
 
 ## Raman axis
 
@@ -54,7 +54,7 @@ No exact duplicate spectra were detected within any supplied spectral matrix:
 - clinical 2018: 10,000 unique of 10,000
 - clinical 2019: 2,500 unique of 2,500
 
-This does not by itself prove independence across splits or biological isolates.
+No exact within-split duplicates were found. A reusable exact cross-split audit is also committed at `data-manifests/cross-split-duplicates.json`; all ten current matrix pairs report zero exact overlaps. Exact non-duplication still does not prove biological independence.
 
 ## Existing preprocessing assessment
 
