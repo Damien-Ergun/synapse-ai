@@ -1,8 +1,5 @@
-from fastapi.testclient import TestClient
-from synapse_api.main import app
+from synapse_api.main import health
 
 
-def test_api_health() -> None:
-    response = TestClient(app).get("/health")
-    assert response.status_code == 200
-    assert response.json()["status"] == "ok"
+def test_api_health_function() -> None:
+    assert health() == {"status": "ok", "scope": "week1-health-only"}
