@@ -6,7 +6,7 @@ import os
 from collections import Counter
 from itertools import combinations
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -46,8 +46,8 @@ def duplicate_summary(matrix: NDArray[np.generic]) -> dict[str, int | float]:
 def cross_split_duplicate_summary(paths: list[Path]) -> list[dict[str, str | int]]:
     hashes_by_name: dict[str, set[bytes]] = {}
     for path in paths:
-        loaded = np.load(path, mmap_mode="r", allow_pickle=False)
-        if not isinstance(loaded, np.ndarray) or loaded.ndim != 2:
+        loaded = cast(NDArray[np.generic], np.load(path, mmap_mode="r", allow_pickle=False))
+        if loaded.ndim != 2:
             raise ValueError(f"{path.name} must be a 2D spectral matrix")
         hashes_by_name[path.name] = _row_hashes(loaded)
 
@@ -134,21 +134,21 @@ def spectrum_summary(matrix: NDArray[np.generic]) -> dict[str, Any]:
     }
 
 
-def json_safe(value: Any) -> Any:
+def json_safe(value: object) -> object:
     if isinstance(value, float) and not math.isfinite(value):
         return None
     if isinstance(value, dict):
-        return {key: json_safe(item) for key, item in value.items()}
+        mapping = cast(dict[str, object], value)
+        return {key: json_safe(item) for key, item in mapping.items()}
     if isinstance(value, list):
-        return [json_safe(item) for item in value]
+        sequence = cast(list[object], value)
+        return [json_safe(item) for item in sequence]
     return value
 
 
 def inspect_npy(path: Path) -> dict[str, Any]:
     role = infer_role(path)
-    loaded = np.load(path, mmap_mode="r", allow_pickle=False)
-    if not isinstance(loaded, np.ndarray):
-        raise ValueError(f"Expected an NPY array at {path}")
+    loaded = cast(NDArray[np.generic], np.load(path, mmap_mode="r", allow_pickle=False))
 
     if role is DatasetRole.AXIS:
         if loaded.ndim != 1:
