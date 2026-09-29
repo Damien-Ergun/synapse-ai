@@ -143,8 +143,6 @@ def test_committed_manifest_contract_matches_generator_contract() -> None:
         "generated_at",
         "source_path_policy",
     ]
-    assert [entry["filename"] for entry in committed["files"]] == list(
-        EXPECTED_DATASET_ORDER
-    )
+    assert [entry["filename"] for entry in committed["files"]] == list(EXPECTED_DATASET_ORDER)
     assert "cross_split_exact_duplicates" not in committed
     assert "generated_at" not in normalize_manifest_for_comparison(committed)
