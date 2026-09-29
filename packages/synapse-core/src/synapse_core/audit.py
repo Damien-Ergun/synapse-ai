@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import hashlib
+import math
 import os
 from collections import Counter
+from itertools import combinations
 from pathlib import Path
 from typing import Any
 
@@ -20,10 +22,21 @@ def sha256_file(path: Path, chunk_size: int = 1024 * 1024) -> str:
     return digest.hexdigest()
 
 
+def _row_hashes(matrix: NDArray[np.generic]) -> set[bytes]:
+    if matrix.ndim != 2:
+        raise ValueError("row hashing requires a 2D matrix")
+    return {
+        hashlib.sha256(np.ascontiguousarray(row).tobytes()).digest()
+        for row in matrix
+    }
+
+
 def duplicate_summary(matrix: NDArray[np.generic]) -> dict[str, int | float]:
     if matrix.ndim != 2:
         raise ValueError("duplicate_summary requires a 2D matrix")
-    counts = Counter(hashlib.sha256(np.ascontiguousarray(row).tobytes()).digest() for row in matrix)
+    counts = Counter(
+        hashlib.sha256(np.ascontiguousarray(row).tobytes()).digest() for row in matrix
+    )
     unique = len(counts)
     duplicates = matrix.shape[0] - unique
     return {
@@ -35,7 +48,30 @@ def duplicate_summary(matrix: NDArray[np.generic]) -> dict[str, int | float]:
     }
 
 
+def cross_split_duplicate_summary(paths: list[Path]) -> list[dict[str, str | int]]:
+    hashes_by_name: dict[str, set[bytes]] = {}
+    for path in paths:
+        loaded = np.load(path, mmap_mode="r", allow_pickle=False)
+        if not isinstance(loaded, np.ndarray) or loaded.ndim != 2:
+            raise ValueError(f"{path.name} must be a 2D spectral matrix")
+        hashes_by_name[path.name] = _row_hashes(loaded)
+
+    report: list[dict[str, str | int]] = []
+    for left, right in combinations(paths, 2):
+        duplicate_count = len(hashes_by_name[left.name] & hashes_by_name[right.name])
+        report.append(
+            {
+                "left": left.name,
+                "right": right.name,
+                "exact_duplicate_count": duplicate_count,
+            }
+        )
+    return report
+
+
 def label_summary(labels: NDArray[np.generic]) -> dict[str, Any]:
+    if labels.ndim != 1:
+        raise ValueError("label_summary requires a 1D array")
     values, counts = np.unique(labels, return_counts=True)
     total = len(labels)
     return {
@@ -43,7 +79,8 @@ def label_summary(labels: NDArray[np.generic]) -> dict[str, Any]:
         "unique_classes": len(values),
         "class_values": [value.item() for value in values],
         "class_counts": {
-            str(value.item()): int(count) for value, count in zip(values, counts, strict=True)
+            str(value.item()): int(count)
+            for value, count in zip(values, counts, strict=True)
         },
         "class_proportions": {
             str(value.item()): float(count / total)
@@ -53,6 +90,8 @@ def label_summary(labels: NDArray[np.generic]) -> dict[str, Any]:
 
 
 def axis_summary(axis: NDArray[np.generic]) -> dict[str, Any]:
+    if axis.ndim != 1 or len(axis) < 2:
+        raise ValueError("axis_summary requires a 1D array with at least two values")
     numeric = np.asarray(axis, dtype=np.float64)
     spacing = np.diff(numeric)
     return {
@@ -80,6 +119,8 @@ def _distribution(values: NDArray[np.float64]) -> dict[str, float]:
 
 
 def spectrum_summary(matrix: NDArray[np.generic]) -> dict[str, Any]:
+    if matrix.ndim != 2:
+        raise ValueError("spectrum_summary requires a 2D matrix")
     x = np.asarray(matrix, dtype=np.float64)
     return {
         "global_min": float(x.min()),
@@ -99,18 +140,40 @@ def spectrum_summary(matrix: NDArray[np.generic]) -> dict[str, Any]:
     }
 
 
+def json_safe(value: Any) -> Any:
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    if isinstance(value, dict):
+        return {key: json_safe(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [json_safe(item) for item in value]
+    return value
+
+
 def inspect_npy(path: Path) -> dict[str, Any]:
     role = infer_role(path)
-    array = np.load(path, mmap_mode="r", allow_pickle=False)
-    floating = np.asarray(array, dtype=np.float64)
+    loaded = np.load(path, mmap_mode="r", allow_pickle=False)
+    if not isinstance(loaded, np.ndarray):
+        raise ValueError(f"Expected an NPY array at {path}")
+
+    if role is DatasetRole.AXIS:
+        if loaded.ndim != 1:
+            raise ValueError(f"{path.name} must be a 1D Raman axis")
+    elif path.name.startswith("y_"):
+        if loaded.ndim != 1:
+            raise ValueError(f"{path.name} must be a 1D label array")
+    elif loaded.ndim != 2:
+        raise ValueError(f"{path.name} must be a 2D spectral matrix")
+
+    floating = np.asarray(loaded, dtype=np.float64)
     result: dict[str, Any] = {
         "filename": path.name,
         "role": role.value,
         "sha256": sha256_file(path),
-        "shape": list(array.shape),
-        "ndim": array.ndim,
-        "dtype": str(array.dtype),
-        "estimated_memory_bytes": int(array.nbytes),
+        "shape": list(loaded.shape),
+        "ndim": loaded.ndim,
+        "dtype": str(loaded.dtype),
+        "estimated_memory_bytes": int(loaded.nbytes),
         "nan_count": int(np.isnan(floating).sum()),
         "posinf_count": int(np.isposinf(floating).sum()),
         "neginf_count": int(np.isneginf(floating).sum()),
@@ -124,9 +187,9 @@ def inspect_npy(path: Path) -> dict[str, Any]:
         result["holdout_detail_status"] = "LOCKED_METADATA_ONLY"
         return result
     if path.name.startswith("y_"):
-        result["labels"] = label_summary(array)
+        result["labels"] = label_summary(loaded)
     elif role is DatasetRole.AXIS:
-        result["axis"] = axis_summary(array)
-    elif array.ndim == 2:
-        result["spectra"] = spectrum_summary(array)
+        result["axis"] = axis_summary(loaded)
+    else:
+        result["spectra"] = spectrum_summary(loaded)
     return result
