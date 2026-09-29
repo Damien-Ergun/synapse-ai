@@ -60,6 +60,24 @@ def build_manifest_payload(data_dir: Path) -> dict[str, Any]:
     }
 
 
+def normalize_manifest_for_comparison(payload: dict[str, Any]) -> dict[str, Any]:
+    normalized = dict(payload)
+    normalized.pop("generated_at", None)
+    return normalized
+
+
+def verify_manifest_reproducibility(data_dir: Path, committed_manifest: Path) -> None:
+    generated = normalize_manifest_for_comparison(build_manifest_payload(data_dir))
+    committed_raw = json.loads(committed_manifest.read_text(encoding="utf-8"))
+    if not isinstance(committed_raw, dict):
+        raise ValueError("committed manifest must contain a JSON object")
+    committed = normalize_manifest_for_comparison(committed_raw)
+    if generated != committed:
+        raise ValueError(
+            "committed dataset manifest differs materially from current generator output"
+        )
+
+
 def write_manifest(data_dir: Path, output: Path) -> None:
     payload = json_safe(build_manifest_payload(data_dir))
     serialized = json.dumps(payload, indent=2, sort_keys=True, allow_nan=False) + "\n"
@@ -85,3 +103,22 @@ def manifest(
     except ValueError as exc:
         raise typer.BadParameter(str(exc)) from exc
     typer.echo(str(output))
+
+@app.command("verify-manifest")
+def verify_manifest(
+    data_dir: Annotated[Path, typer.Argument(exists=True, file_okay=False, readable=True)],
+    committed_manifest: Annotated[
+        Path,
+        typer.Option(
+            "--committed-manifest",
+            exists=True,
+            dir_okay=False,
+            readable=True,
+        ),
+    ] = Path("data-manifests/dataset-manifest.json"),
+) -> None:
+    try:
+        verify_manifest_reproducibility(data_dir, committed_manifest)
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo("dataset manifest is reproducible modulo generated_at")
