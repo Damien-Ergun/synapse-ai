@@ -1,5 +1,0 @@
-fastapi<1,>=0.115
-numpy<3,>=2.1
-streamlit<2,>=1.39
-typer<1,>=0.12
-uvicorn<1,>=0.32
