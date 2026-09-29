@@ -1,0 +1,22 @@
+{
+  "role": "clinical2019",
+  "policy": "locked_final_evaluation",
+  "development_access": false,
+  "metadata_status": "VERIFIED",
+  "verified_from_dataset_manifest_generated_at": "2026-09-29T12:01:23.276488+00:00",
+  "files": [
+    {
+      "filename": "X_2019clinical.npy",
+      "sha256": "79235c885d66f4013647458154387863e717c78d27082ee457444321b90dab86",
+      "shape": [2500, 1000],
+      "dtype": "float64"
+    },
+    {
+      "filename": "y_2019clinical.npy",
+      "sha256": "705deee65ebf258582ff2dbe236a8145c8deb1ca5ebac9a53a9527fd174344dc",
+      "shape": [2500],
+      "dtype": "float64"
+    }
+  ],
+  "status": "LOCKED_AND_IDENTIFIED"
+}

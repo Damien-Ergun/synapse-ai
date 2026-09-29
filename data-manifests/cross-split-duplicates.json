@@ -1,0 +1,18 @@
+{
+  "dataset_id": "synapse-raman-v0-supplied-arrays",
+  "source_manifest_generated_at": "2026-09-29T12:01:23.276488+00:00",
+  "method": "SHA-256 row hashing over exact contiguous row bytes",
+  "pairs": [
+    {"left": "X_reference.npy", "right": "X_finetune.npy", "exact_duplicate_count": 0},
+    {"left": "X_reference.npy", "right": "X_test.npy", "exact_duplicate_count": 0},
+    {"left": "X_reference.npy", "right": "X_2018clinical.npy", "exact_duplicate_count": 0},
+    {"left": "X_reference.npy", "right": "X_2019clinical.npy", "exact_duplicate_count": 0},
+    {"left": "X_finetune.npy", "right": "X_test.npy", "exact_duplicate_count": 0},
+    {"left": "X_finetune.npy", "right": "X_2018clinical.npy", "exact_duplicate_count": 0},
+    {"left": "X_finetune.npy", "right": "X_2019clinical.npy", "exact_duplicate_count": 0},
+    {"left": "X_test.npy", "right": "X_2018clinical.npy", "exact_duplicate_count": 0},
+    {"left": "X_test.npy", "right": "X_2019clinical.npy", "exact_duplicate_count": 0},
+    {"left": "X_2018clinical.npy", "right": "X_2019clinical.npy", "exact_duplicate_count": 0}
+  ],
+  "all_pairwise_exact_duplicate_counts_zero": true
+}
