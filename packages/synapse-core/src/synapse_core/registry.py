@@ -1,17 +1,17 @@
 """Trusted identities and expected inventory for the supplied Week 1 dataset."""
 
 EXPECTED_DATASET_ORDER: tuple[str, ...] = (
-    "X_reference.npy",
-    "y_reference.npy",
-    "X_finetune.npy",
-    "y_finetune.npy",
-    "X_test.npy",
-    "y_test.npy",
-    "X_2018clinical.npy",
-    "y_2018clinical.npy",
-    "X_2019clinical.npy",
-    "y_2019clinical.npy",
     "wavenumbers.npy",
+    "X_2018clinical.npy",
+    "X_2019clinical.npy",
+    "X_finetune.npy",
+    "X_reference.npy",
+    "X_test.npy",
+    "y_2018clinical.npy",
+    "y_2019clinical.npy",
+    "y_finetune.npy",
+    "y_reference.npy",
+    "y_test.npy",
 )
 
 EXPECTED_DATASET_FILENAMES: frozenset[str] = frozenset(EXPECTED_DATASET_ORDER)
