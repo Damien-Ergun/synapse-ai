@@ -44,9 +44,13 @@ def label_summary(labels: NDArray[np.generic]) -> dict[str, Any]:
         "observations": total,
         "unique_classes": len(values),
         "class_values": [value.item() for value in values],
-        "class_counts": {str(v.item()): int(c) for v, c in zip(values, counts, strict=True)},
+        "class_counts": {
+            str(value.item()): int(count)
+            for value, count in zip(values, counts, strict=True)
+        },
         "class_proportions": {
-            str(v.item()): float(c / total) for v, c in zip(values, counts, strict=True)
+            str(value.item()): float(count / total)
+            for value, count in zip(values, counts, strict=True)
         },
     }
 
@@ -73,8 +77,9 @@ def axis_summary(axis: NDArray[np.generic]) -> dict[str, Any]:
 
 
 def _distribution(values: NDArray[np.float64]) -> dict[str, float]:
-    q = np.quantile(values, [0, 0.05, 0.25, 0.5, 0.75, 0.95, 1])
-    return dict(zip(("min", "p05", "p25", "median", "p75", "p95", "max"), map(float, q), strict=True))
+    quantiles = np.quantile(values, [0, 0.05, 0.25, 0.5, 0.75, 0.95, 1])
+    keys = ("min", "p05", "p25", "median", "p75", "p95", "max")
+    return dict(zip(keys, map(float, quantiles), strict=True))
 
 
 def spectrum_summary(matrix: NDArray[np.generic]) -> dict[str, Any]:
@@ -114,7 +119,11 @@ def inspect_npy(path: Path) -> dict[str, Any]:
         "neginf_count": int(np.isneginf(floating).sum()),
         "finite_fraction": float(np.isfinite(floating).mean()),
     }
-    if role is DatasetRole.CLINICAL_2019 and os.environ.get("SYNAPSE_HOLDOUT_METADATA_AUDIT") != "1":
+    holdout_locked = (
+        role is DatasetRole.CLINICAL_2019
+        and os.environ.get("SYNAPSE_HOLDOUT_METADATA_AUDIT") != "1"
+    )
+    if holdout_locked:
         result["holdout_detail_status"] = "LOCKED_METADATA_ONLY"
         return result
     if path.name.startswith("y_"):
