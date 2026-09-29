@@ -1,6 +1,6 @@
 # Week 1 closeout status
 
-Updated after the audited Raman dataset manifest was committed on 2026-09-29.
+Updated after the audited Raman dataset manifest and outreach templates were committed on 2026-09-29.
 
 ## Technical exit gates
 
@@ -16,18 +16,18 @@ Updated after the audited Raman dataset manifest was committed on 2026-09-29.
 | Preprocessing uncertainty documented | PASS | Strong evidence of prior scaling, exact method remains unknown |
 | First two interviews scheduled | PENDING HUMAN ACTION | Calendar/email evidence required |
 
-## Additional Week 1 founder actions
+## Week 1 founder/business deliverables
 
-These remain pending unless the founder supplies evidence:
-
-- complete the 30-person interview candidate list across approximately ten Paris-region institutions;
-- activate the warm introduction to the biology research assistant;
-- approve/use the French outreach template;
-- approve/use the English outreach template;
-- schedule the first two interviews;
-- document provisional Damien/Issam roles;
-- schedule the equity and governance discussion before the end of Week 2;
-- agree and document Issam's fixed weekly contribution.
+| Deliverable | Status |
+| --- | --- |
+| 30 interview candidates across ~10 Paris-region institutions | PENDING |
+| Warm introduction to biology research assistant | PENDING HUMAN ACTION |
+| French outreach template | PASS |
+| English outreach template | PASS |
+| First two interviews scheduled | PENDING HUMAN ACTION |
+| Damien and Issam provisional roles agreed | PENDING HUMAN ACTION |
+| Equity/governance discussion scheduled before end of Week 2 | PENDING HUMAN ACTION |
+| Issam fixed weekly contribution agreed | PENDING HUMAN ACTION |
 
 ## Follow-up items that do not invalidate the Week 1 technical foundation
 
@@ -38,4 +38,6 @@ These remain pending unless the founder supplies evidence:
 
 ## Merge readiness
 
-The engineering and data-audit foundation is ready for review. Keep the Week 1 PR in draft until the remaining founder closeout actions, especially the two scheduled interviews required by the exit gate, are evidenced.
+The engineering and data-audit foundation is ready for review.
+
+Keep PR #1 in draft until the founder/business closeout is evidenced, especially the explicit exit gate requiring the first two interviews to be scheduled.
