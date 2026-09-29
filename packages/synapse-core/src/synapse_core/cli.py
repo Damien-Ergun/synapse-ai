@@ -104,6 +104,7 @@ def manifest(
         raise typer.BadParameter(str(exc)) from exc
     typer.echo(str(output))
 
+
 @app.command("verify-manifest")
 def verify_manifest(
     data_dir: Annotated[Path, typer.Argument(exists=True, file_okay=False, readable=True)],
