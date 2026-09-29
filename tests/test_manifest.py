@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import numpy as np
@@ -119,7 +120,7 @@ def test_manifest_reproducibility_ignores_only_generated_at(
     committed["generated_at"] = "2000-01-01T00:00:00+00:00"
     committed_path = tmp_path / "committed.json"
     committed_path.write_text(
-        __import__("json").dumps(committed, sort_keys=True),
+        json.dumps(committed, sort_keys=True),
         encoding="utf-8",
     )
 
@@ -127,7 +128,7 @@ def test_manifest_reproducibility_ignores_only_generated_at(
 
     committed["source_path_policy"] = "materially-different"
     committed_path.write_text(
-        __import__("json").dumps(committed, sort_keys=True),
+        json.dumps(committed, sort_keys=True),
         encoding="utf-8",
     )
     with pytest.raises(ValueError, match="differs materially"):
@@ -136,7 +137,7 @@ def test_manifest_reproducibility_ignores_only_generated_at(
 
 def test_committed_manifest_contract_matches_generator_contract() -> None:
     committed_path = Path("data-manifests/dataset-manifest.json")
-    committed = __import__("json").loads(committed_path.read_text(encoding="utf-8"))
+    committed = json.loads(committed_path.read_text(encoding="utf-8"))
 
     assert list(committed) == [
         "dataset_id",
