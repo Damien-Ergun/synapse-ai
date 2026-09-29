@@ -4,6 +4,7 @@ __pycache__/
 .pyright/
 .ruff_cache/
 *.py[cod]
+*.egg-info/
 .DS_Store
 .env
 data/
