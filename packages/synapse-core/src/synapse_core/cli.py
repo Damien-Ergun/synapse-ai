@@ -4,7 +4,7 @@ import json
 import os
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 
 import typer
 
@@ -71,7 +71,7 @@ def verify_manifest_reproducibility(data_dir: Path, committed_manifest: Path) ->
     committed_raw = json.loads(committed_manifest.read_text(encoding="utf-8"))
     if not isinstance(committed_raw, dict):
         raise ValueError("committed manifest must contain a JSON object")
-    committed = normalize_manifest_for_comparison(committed_raw)
+    committed = normalize_manifest_for_comparison(cast(dict[str, Any], committed_raw))
     if generated != committed:
         raise ValueError(
             "committed dataset manifest differs materially from current generator output"
