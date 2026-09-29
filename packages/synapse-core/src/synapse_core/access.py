@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+import hashlib
 from enum import StrEnum
 from pathlib import Path
+from typing import BinaryIO
 
 import numpy as np
 from numpy.typing import NDArray
+
+from synapse_core.registry import PROTECTED_HOLDOUT_SHA256
 
 
 class DatasetRole(StrEnum):
@@ -37,14 +41,36 @@ def infer_role(path: Path) -> DatasetRole:
     raise ValueError(f"Cannot infer dataset role from {path.name!r}")
 
 
-def assert_development_access(path: Path) -> None:
-    if infer_role(path) is DatasetRole.CLINICAL_2019:
+def _sha256_handle(handle: BinaryIO, chunk_size: int = 1024 * 1024) -> str:
+    digest = hashlib.sha256()
+    for chunk in iter(lambda: handle.read(chunk_size), b""):
+        digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _raise_if_holdout(role: DatasetRole, sha256: str | None = None) -> None:
+    if role is DatasetRole.CLINICAL_2019 or sha256 in PROTECTED_HOLDOUT_SHA256:
         raise HoldoutAccessError(
             "clinical2019 is locked for final evaluation and cannot be loaded "
             "by development workflows"
         )
 
 
+def assert_development_access(path: Path) -> None:
+    role = infer_role(path)
+    _raise_if_holdout(role)
+    with path.open("rb") as handle:
+        _raise_if_holdout(role, _sha256_handle(handle))
+
+
 def load_development_array(path: Path) -> NDArray[np.generic]:
-    assert_development_access(path)
-    return np.load(path, allow_pickle=False)
+    role = infer_role(path)
+    _raise_if_holdout(role)
+    with path.open("rb") as handle:
+        digest = _sha256_handle(handle)
+        _raise_if_holdout(role, digest)
+        handle.seek(0)
+        loaded = np.load(handle, allow_pickle=False)
+    if not isinstance(loaded, np.ndarray):
+        raise ValueError(f"Expected an NPY array at {path}")
+    return loaded
