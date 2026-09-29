@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 from enum import StrEnum
 from pathlib import Path
-from typing import BinaryIO
+from typing import BinaryIO, cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -70,7 +70,5 @@ def load_development_array(path: Path) -> NDArray[np.generic]:
         digest = _sha256_handle(handle)
         _raise_if_holdout(role, digest)
         handle.seek(0)
-        loaded = np.load(handle, allow_pickle=False)
-    if not isinstance(loaded, np.ndarray):
-        raise ValueError(f"Expected an NPY array at {path}")
+        loaded = cast(NDArray[np.generic], np.load(handle, allow_pickle=False))
     return loaded
