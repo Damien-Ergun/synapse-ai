@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: synapse-ai
+Version: 0.1.0
+Summary: Synapse AI Raman V0 reproducibility foundation
+Requires-Python: <3.12,>=3.11
+Requires-Dist: fastapi<1,>=0.115
+Requires-Dist: numpy<3,>=2.1
+Requires-Dist: streamlit<2,>=1.39
+Requires-Dist: typer<1,>=0.12
+Requires-Dist: uvicorn<1,>=0.32
