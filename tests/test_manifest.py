@@ -2,7 +2,13 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from synapse_core.cli import validate_dataset_inventory, write_manifest
+from synapse_core.cli import (
+    build_manifest_payload,
+    normalize_manifest_for_comparison,
+    validate_dataset_inventory,
+    verify_manifest_reproducibility,
+    write_manifest,
+)
 from synapse_core.registry import EXPECTED_DATASET_ORDER
 
 
@@ -77,6 +83,69 @@ def test_complete_inventory_writes_manifest(
     assert output.exists()
     text = output.read_text(encoding="utf-8")
     assert '"dataset_id": "synapse-raman-v0-supplied-arrays"' in text
-    assert '"cross_split_exact_duplicates"' in text
+    assert '"cross_split_exact_duplicates"' not in text
     for name in EXPECTED_DATASET_ORDER:
         assert name in text
+
+
+def test_manifest_generator_uses_canonical_schema_and_order(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    data_dir = tmp_path / "data"
+    _write_complete_dataset(data_dir)
+    monkeypatch.setenv("SYNAPSE_HOLDOUT_METADATA_AUDIT", "1")
+
+    payload = build_manifest_payload(data_dir)
+
+    assert list(payload) == [
+        "dataset_id",
+        "generated_at",
+        "source_path_policy",
+        "files",
+    ]
+    assert [entry["filename"] for entry in payload["files"]] == list(
+        EXPECTED_DATASET_ORDER
+    )
+
+
+def test_manifest_reproducibility_ignores_only_generated_at(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    data_dir = tmp_path / "data"
+    _write_complete_dataset(data_dir)
+    monkeypatch.setenv("SYNAPSE_HOLDOUT_METADATA_AUDIT", "1")
+
+    committed = build_manifest_payload(data_dir)
+    committed["generated_at"] = "2000-01-01T00:00:00+00:00"
+    committed_path = tmp_path / "committed.json"
+    committed_path.write_text(
+        __import__("json").dumps(committed, sort_keys=True),
+        encoding="utf-8",
+    )
+
+    verify_manifest_reproducibility(data_dir, committed_path)
+
+    committed["source_path_policy"] = "materially-different"
+    committed_path.write_text(
+        __import__("json").dumps(committed, sort_keys=True),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="differs materially"):
+        verify_manifest_reproducibility(data_dir, committed_path)
+
+
+def test_committed_manifest_contract_matches_generator_contract() -> None:
+    committed_path = Path("data-manifests/dataset-manifest.json")
+    committed = __import__("json").loads(committed_path.read_text(encoding="utf-8"))
+
+    assert list(committed) == [
+        "dataset_id",
+        "files",
+        "generated_at",
+        "source_path_policy",
+    ]
+    assert [entry["filename"] for entry in committed["files"]] == list(
+        EXPECTED_DATASET_ORDER
+    )
+    assert "cross_split_exact_duplicates" not in committed
+    assert "generated_at" not in normalize_manifest_for_comparison(committed)
