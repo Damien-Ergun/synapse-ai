@@ -8,11 +8,10 @@ from typing import Annotated, Any
 
 import typer
 
-from synapse_core.audit import cross_split_duplicate_summary, inspect_npy, json_safe
+from synapse_core.audit import inspect_npy, json_safe
 from synapse_core.registry import (
     EXPECTED_DATASET_FILENAMES,
     EXPECTED_DATASET_ORDER,
-    SPECTRAL_MATRIX_FILENAMES,
     XY_PAIRS,
 )
 
@@ -53,13 +52,11 @@ def build_manifest_payload(data_dir: Path) -> dict[str, Any]:
     paths = validate_dataset_inventory(data_dir)
     entries = [inspect_npy(path) for path in paths]
     _validate_compatibility(entries)
-    spectral_paths = [data_dir / name for name in SPECTRAL_MATRIX_FILENAMES]
     return {
         "dataset_id": "synapse-raman-v0-supplied-arrays",
         "generated_at": datetime.now(UTC).isoformat(),
         "source_path_policy": "filenames_only_no_absolute_paths",
         "files": entries,
-        "cross_split_exact_duplicates": cross_split_duplicate_summary(spectral_paths),
     }
 
 
