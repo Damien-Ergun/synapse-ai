@@ -40,7 +40,8 @@ def infer_role(path: Path) -> DatasetRole:
 def assert_development_access(path: Path) -> None:
     if infer_role(path) is DatasetRole.CLINICAL_2019:
         raise HoldoutAccessError(
-            "clinical2019 is locked for final evaluation and cannot be loaded by development workflows"
+            "clinical2019 is locked for final evaluation and cannot be loaded "
+            "by development workflows"
         )
 
 
