@@ -2,7 +2,6 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-
 from synapse_core.access import HoldoutAccessError, load_development_array
 
 
