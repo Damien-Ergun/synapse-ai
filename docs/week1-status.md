@@ -16,13 +16,14 @@ The independent reviewer returned **FAIL** because the original clinical2019 saf
 | W1-H01 incomplete manifest generation | REMEDIATED, RE-REVIEW REQUIRED | Exact 11-file inventory validation and missing-file tests |
 | W1-H02 biological label equivalence wording | REMEDIATED | Dataset card now says same numeric label codes; biological mapping is UNVERIFIED |
 | Cross-split duplicate reproducibility | REMEDIATED | Reusable pairwise audit plus synthetic detection test and committed zero-overlap result |
+| W1-H03 authoritative manifest reproducibility | REMEDIATED, RE-REVIEW REQUIRED | Generator restored to committed schema/order; explicit timestamp-normalized verifier and regression tests added |
 
 ## Other robustness improvements
 
 - strict JSON serialization converts non-finite summary values to `null`;
 - malformed spectral dimensionality is rejected;
 - Docker runtime uses `uv run --no-sync`;
-- `*.egg-info/` is ignored;
+- `*.egg-info/` is ignored and tracked generated metadata cleanup has begun;
 - PR #1 is draft again.
 
 ## Technical gates
