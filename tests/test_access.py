@@ -69,7 +69,5 @@ def test_holdout_registry_matches_committed_holdout_manifest() -> None:
     payload = json.loads(
         Path("data-manifests/clinical2019-holdout.json").read_text(encoding="utf-8")
     )
-    manifest_hashes = {
-        entry["filename"]: entry["sha256"] for entry in payload["files"]
-    }
+    manifest_hashes = {entry["filename"]: entry["sha256"] for entry in payload["files"]}
     assert manifest_hashes == HOLDOUT_SHA256_BY_FILENAME
