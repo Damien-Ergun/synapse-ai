@@ -104,9 +104,7 @@ def test_manifest_generator_uses_canonical_schema_and_order(
         "source_path_policy",
         "files",
     ]
-    assert [entry["filename"] for entry in payload["files"]] == list(
-        EXPECTED_DATASET_ORDER
-    )
+    assert [entry["filename"] for entry in payload["files"]] == list(EXPECTED_DATASET_ORDER)
 
 
 def test_manifest_reproducibility_ignores_only_generated_at(
