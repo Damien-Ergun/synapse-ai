@@ -11,12 +11,8 @@ from synapse_core.registry import HOLDOUT_SHA256_BY_FILENAME
 
 def test_frozen_holdout_hashes_match_audited_registry() -> None:
     assert HOLDOUT_SHA256_BY_FILENAME == {
-        "X_2019clinical.npy": (
-            "79235c885d66f4013647458154387863e717c78d27082ee457444321b90dab86"
-        ),
-        "y_2019clinical.npy": (
-            "705deee65ebf258582ff2dbe236a8145c8deb1ca5ebac9a53a9527fd174344dc"
-        ),
+        "X_2019clinical.npy": ("79235c885d66f4013647458154387863e717c78d27082ee457444321b90dab86"),
+        "y_2019clinical.npy": ("705deee65ebf258582ff2dbe236a8145c8deb1ca5ebac9a53a9527fd174344dc"),
     }
 
 
