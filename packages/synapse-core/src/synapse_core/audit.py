@@ -25,18 +25,13 @@ def sha256_file(path: Path, chunk_size: int = 1024 * 1024) -> str:
 def _row_hashes(matrix: NDArray[np.generic]) -> set[bytes]:
     if matrix.ndim != 2:
         raise ValueError("row hashing requires a 2D matrix")
-    return {
-        hashlib.sha256(np.ascontiguousarray(row).tobytes()).digest()
-        for row in matrix
-    }
+    return {hashlib.sha256(np.ascontiguousarray(row).tobytes()).digest() for row in matrix}
 
 
 def duplicate_summary(matrix: NDArray[np.generic]) -> dict[str, int | float]:
     if matrix.ndim != 2:
         raise ValueError("duplicate_summary requires a 2D matrix")
-    counts = Counter(
-        hashlib.sha256(np.ascontiguousarray(row).tobytes()).digest() for row in matrix
-    )
+    counts = Counter(hashlib.sha256(np.ascontiguousarray(row).tobytes()).digest() for row in matrix)
     unique = len(counts)
     duplicates = matrix.shape[0] - unique
     return {
@@ -79,8 +74,7 @@ def label_summary(labels: NDArray[np.generic]) -> dict[str, Any]:
         "unique_classes": len(values),
         "class_values": [value.item() for value in values],
         "class_counts": {
-            str(value.item()): int(count)
-            for value, count in zip(values, counts, strict=True)
+            str(value.item()): int(count) for value, count in zip(values, counts, strict=True)
         },
         "class_proportions": {
             str(value.item()): float(count / total)
