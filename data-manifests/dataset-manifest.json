@@ -1,0 +1,7 @@
+{
+  "dataset_id": "synapse-raman-v0-supplied-arrays",
+  "generated_at": null,
+  "status": "BLOCKED_LOCAL_AUDIT",
+  "reason": "The worker execution sandbox could not read the mounted /mnt/data inputs. No hashes or statistics are fabricated.",
+  "files": []
+}

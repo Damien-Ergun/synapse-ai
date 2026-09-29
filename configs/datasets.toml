@@ -1,0 +1,12 @@
+[dataset_policy]
+raw_inputs_immutable = true
+raw_inputs_in_git = false
+
+[roles.clinical2018]
+development_access = true
+isolate_identity = "unknown"
+
+[roles.clinical2019]
+development_access = false
+purpose = "locked_final_evaluation"
+metadata_audit_env = "SYNAPSE_HOLDOUT_METADATA_AUDIT"

@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.pyright/
+.ruff_cache/
+*.py[cod]
+.DS_Store
+.env
+data/
+raw-data/
+*.npy
+*.npz
+artifacts/*
+!artifacts/.gitkeep
+reports/generated/*
+!reports/generated/.gitkeep
+notebooks/.ipynb_checkpoints/

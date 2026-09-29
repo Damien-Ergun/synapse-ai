@@ -1,0 +1,1 @@
+"""Synapse AI API skeleton."""
